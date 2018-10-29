@@ -1,0 +1,10 @@
+# dependencies
+node_modules
+
+# misc
+.DS_Store
+.env
+*.log
+*.log.*
+.vscode
+jsconfig.json
