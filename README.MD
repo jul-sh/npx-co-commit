@@ -1,8 +1,6 @@
 # 🤝 co-commit
 
-Co-author GitHub commits with ease.
-
-Run `npx co-commit` to start.
+Run `npx co-commit` to start. - No installation needed.
 
 ![screenshot of using gif co-commit](screenshot.gif)
 
@@ -16,7 +14,7 @@ To speed up your workflow you can preinstall co-commit using `npm i -g co-commit
 
 ## ⛓ Dependencies
 
-Having `git` and `node` installed.
+[Git](https://git-scm.com/), [NodeJs](https://nodejs.org/en/).
 
 ## Contributors
 
