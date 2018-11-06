@@ -39,6 +39,7 @@
     "index.js"
   ],
   "dependencies": {
+    "arg": "^2.0.0",
     "prompts": "^1.1.1"
   }
 }
