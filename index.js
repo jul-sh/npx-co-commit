@@ -1,14 +1,24 @@
 #!/usr/bin/env node
-
-const prompts = require('prompts')
 const { execSync } = require('child_process')
 
+const prompt = question =>
+  // use promises instead of a async/await for better callback compatibility.
+  new Promise(resolve => {
+    const { stdin, stdout } = process
+
+    stdin.resume()
+    stdout.write(`\x1b[36m? \x1b[0m\x1b[1m${question} \x1b[0m`)
+
+    stdin.once('data', reponse => resolve(reponse.toString().trim()))
+  })
+
 const writeCommit = ({ message, coAuthors }) => {
+  const messageLine = message ? `-m "${message}"` : ''
   const coAuthoringLines = coAuthors.map(
     coAuthor =>
       `-m "Co-authored-by: ${coAuthor} <${coAuthor.toLowerCase()}@users.noreply.github.com>"`
   )
-  const gitCommand = `git commit -m "${message}" ${coAuthoringLines.join(' ')}`
+  const gitCommand = `git commit ${messageLine} ${coAuthoringLines.join(' ')}`
 
   try {
     console.log('\x1b[2m', gitCommand, '\x1b[0m')
@@ -20,25 +30,11 @@ const writeCommit = ({ message, coAuthors }) => {
 }
 
 const coCommit = async () => {
-  const { message, coAuthors } = await prompts(
-    [
-      {
-        type: 'list',
-        name: 'coAuthors',
-        message: 'Co-Author GitHub Username(s):',
-        validate: coAuthors =>
-          coAuthors ? true : 'Please specify a co-author to continue.'
-      },
-      {
-        type: 'text',
-        name: 'message',
-        message: 'Commit Message:',
-        validate: message =>
-          message ? true : 'Please specify a commit message to continue.'
-      }
-    ],
-    { onCancel: () => process.exit() }
-  )
+  const coAuthors = (await prompt('Co-Author GitHub Username(s):'))
+    .split(',')
+    .map(coAuthor => coAuthor.trim())
+    .filter(coAuthor => coAuthor.length > 0)
+  const message = await prompt('Commit Message:')
 
   return writeCommit({ message, coAuthors })
 }
