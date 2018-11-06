@@ -1,7 +1,32 @@
 {
   "name": "co-commit",
-  "version": "0.2.5",
-  "description": "Easily co-author git commit with team members",
+  "version": "0.2.6",
+  "description": "Shortcut to co-author commits via GitHub usernames",
+  "keywords": [
+    "pair programming",
+    "git",
+    "commit",
+    "co-author"
+  ],
+  "maintainers": [
+    {
+      "name": "Juliette Pretot",
+      "email": "hi@juliette.sh",
+      "web": "https://juliette.sh"
+    },
+    {
+      "name": "Mariia Punda",
+      "email": "",
+      "web": ""
+    }
+  ],
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/juliettepretot/co-commit.git"
+    }
+  ],
+  "homepage": "https://github.com/juliettepretot/co-commit",
   "main": "index.js",
   "license": "MIT",
   "engines": {
