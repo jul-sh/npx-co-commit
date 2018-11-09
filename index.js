@@ -1,14 +1,17 @@
 #!/usr/bin/env node
 
 const prompts = require('prompts')
+const arg = require('arg')
 const { execSync } = require('child_process')
 
-const writeCommit = ({ message, coAuthors }) => {
+const writeCommit = ({ message, coAuthors, otherArgs }) => {
   const coAuthoringLines = coAuthors.map(
     coAuthor =>
       `-m "Co-authored-by: ${coAuthor} <${coAuthor.toLowerCase()}@users.noreply.github.com>"`
   )
-  const gitCommand = `git commit -m "${message}" ${coAuthoringLines.join(' ')}`
+  const gitCommand = `git commit -m "${message}" ${coAuthoringLines.join(
+    ' '
+  )} ${otherArgs.join(' ')}`
 
   try {
     console.log('\x1b[2m', gitCommand, '\x1b[0m')
@@ -20,8 +23,24 @@ const writeCommit = ({ message, coAuthors }) => {
 }
 
 const coCommit = async () => {
-  const { message, coAuthors } = await prompts(
-    [
+  const args = arg(
+    {
+      // Types
+      '--co-authors': [String],
+      '--message': String,
+
+      // Aliases
+      '-co': '--co-authors',
+      '-m': '--message'
+    },
+    {
+      permissive: true
+    }
+  )
+
+  const coAuthors =
+    args['--co-authors'] ||
+    (await prompts(
       {
         type: 'list',
         name: 'coAuthors',
@@ -29,18 +48,25 @@ const coCommit = async () => {
         validate: coAuthors =>
           coAuthors ? true : 'Please specify a co-author to continue.'
       },
+      { onCancel: () => process.exit() }
+    )).coAuthors
+
+  const message =
+    args['--message'] ||
+    (await prompts(
       {
         type: 'text',
         name: 'message',
         message: 'Commit Message:',
         validate: message =>
           message ? true : 'Please specify a commit message to continue.'
-      }
-    ],
-    { onCancel: () => process.exit() }
-  )
+      },
+      { onCancel: () => process.exit() }
+    )).message
 
-  return writeCommit({ message, coAuthors })
+  const otherArgs = args['_']
+
+  return writeCommit({ message, coAuthors, otherArgs })
 }
 
 coCommit()
