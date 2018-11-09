@@ -12,6 +12,8 @@ GitHub allows you to [co-author commits](https://help.github.com/articles/creati
 
 To speed up your workflow you can preinstall co-commit using `npm i -g co-commit`.
 
+You can also utilize git flags with co-commit: eg `git commit --all` becomes `npx co-commit --all`. Additionally, you can skip prompts using flags: eg: `-m "your commit message"` or `-co "mariiapunda, juliettepretot"`.
+
 ## ⛓ Dependencies
 
 [Git](https://git-scm.com/), [NodeJs](https://nodejs.org/en/).
