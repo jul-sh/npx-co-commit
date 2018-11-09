@@ -14,7 +14,7 @@ const writeCommit = ({ message, coAuthors, otherArgs }) => {
   )} ${otherArgs.join(' ')}`
 
   try {
-    console.log('\x1b[2m', gitCommand, '\x1b[0m')
+    console.log(`\x1b[2m${gitCommand}\x1b[0m`)
     execSync(gitCommand, { stdio: 'inherit' })
   } catch (error) {
     // discard node error; git will print an error message.
