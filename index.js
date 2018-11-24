@@ -18,39 +18,38 @@ const gatherInput = async () => {
       '-m': '--message'
     },
     {
+      // maintain all other arguments in the '_' key.
       permissive: true
     }
   )
 
-  const coAuthors =
-    args['--co-authors'] ||
-    (await prompts(
-      {
-        type: 'list',
-        name: 'coAuthors',
-        message: 'Co-Author GitHub Username(s):',
-        validate: coAuthors =>
-          coAuthors ? true : 'Please specify a co-author to continue.'
-      },
-      { onCancel: () => process.exit() }
-    )).coAuthors
-
-  const message =
-    args['--message'] ||
-    (await prompts(
-      {
-        type: 'text',
-        name: 'message',
-        message: 'Commit Message:',
-        validate: message =>
-          message ? true : 'Please specify a commit message to continue.'
-      },
-      { onCancel: () => process.exit() }
-    )).message
-
-  const otherArgs = args['_']
-
-  return { message, coAuthors, otherArgs }
+  return {
+    coAuthors:
+      args['--co-authors'] ||
+      (await prompts(
+        {
+          type: 'list',
+          name: 'coAuthors',
+          message: 'Co-Author GitHub Username(s):',
+          validate: coAuthors =>
+            coAuthors ? true : 'Please specify a co-author to continue.'
+        },
+        { onCancel: () => process.exit() }
+      )).coAuthors,
+    message:
+      args['--message'] ||
+      (await prompts(
+        {
+          type: 'text',
+          name: 'message',
+          message: 'Commit Message:',
+          validate: message =>
+            message ? true : 'Please specify a commit message to continue.'
+        },
+        { onCancel: () => process.exit() }
+      )).message,
+    otherArgs: args['_']
+  }
 }
 
 const writeCommit = async ({ message, coAuthors, otherArgs }) => {
@@ -63,11 +62,7 @@ const writeCommit = async ({ message, coAuthors, otherArgs }) => {
   )} ${otherArgs.join(' ')}`
   console.log(`\x1b[2m${gitCommand}\x1b[0m`)
 
-  try {
-    await asyncExec(gitCommand, { stdio: 'inherit' })
-  } catch (error) {
-    console.log(error.stdout)
-  }
+  await asyncExec(gitCommand, { stdio: 'inherit' })
 }
 
 ;(async () => {
