@@ -2,9 +2,11 @@
 
 const prompts = require('prompts')
 const arg = require('arg')
-const { execSync } = require('child_process')
+const { exec } = require('child_process')
+const { promisify } = require('util')
+const asyncExec = promisify(exec)
 
-const writeCommit = ({ message, coAuthors, otherArgs }) => {
+const writeCommit = async ({ message, coAuthors, otherArgs }) => {
   const coAuthoringLines = coAuthors.map(
     coAuthor =>
       `-m "Co-authored-by: ${coAuthor} <${coAuthor.toLowerCase()}@users.noreply.github.com>"`
@@ -12,14 +14,14 @@ const writeCommit = ({ message, coAuthors, otherArgs }) => {
   const gitCommand = `git commit -m "${message}" ${coAuthoringLines.join(
     ' '
   )} ${otherArgs.join(' ')}`
+  console.log(`\x1b[2m${gitCommand}\x1b[0m`)
 
   try {
-    console.log(`\x1b[2m${gitCommand}\x1b[0m`)
-    execSync(gitCommand, { stdio: 'inherit' })
+    await asyncExec(gitCommand, { stdio: 'inherit' })
   } catch (error) {
-    // discard node error; git will print an error message.
-    process.exit()
+    console.log(error.stdout)
   }
+  process.exit()
 }
 
 const coCommit = async () => {
@@ -66,7 +68,7 @@ const coCommit = async () => {
 
   const otherArgs = args['_']
 
-  return writeCommit({ message, coAuthors, otherArgs })
+  return await writeCommit({ message, coAuthors, otherArgs })
 }
 
 coCommit()
