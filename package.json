@@ -1,6 +1,6 @@
 {
   "name": "co-commit",
-  "version": "0.2.8",
+  "version": "0.2.10",
   "description": "Co-author commits using GitHub usernames",
   "keywords": [
     "pair programming",
