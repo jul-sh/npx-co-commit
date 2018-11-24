@@ -6,25 +6,7 @@ const { exec } = require('child_process')
 const { promisify } = require('util')
 const asyncExec = promisify(exec)
 
-const writeCommit = async ({ message, coAuthors, otherArgs }) => {
-  const coAuthoringLines = coAuthors.map(
-    coAuthor =>
-      `-m "Co-authored-by: ${coAuthor} <${coAuthor.toLowerCase()}@users.noreply.github.com>"`
-  )
-  const gitCommand = `git commit -m "${message}" ${coAuthoringLines.join(
-    ' '
-  )} ${otherArgs.join(' ')}`
-  console.log(`\x1b[2m${gitCommand}\x1b[0m`)
-
-  try {
-    await asyncExec(gitCommand, { stdio: 'inherit' })
-  } catch (error) {
-    console.log(error.stdout)
-  }
-  process.exit()
-}
-
-const coCommit = async () => {
+const gatherInput = async () => {
   const args = arg(
     {
       // Types
@@ -68,7 +50,32 @@ const coCommit = async () => {
 
   const otherArgs = args['_']
 
-  return await writeCommit({ message, coAuthors, otherArgs })
+  return { message, coAuthors, otherArgs }
 }
 
-coCommit()
+const writeCommit = async ({ message, coAuthors, otherArgs }) => {
+  const coAuthoringLines = coAuthors.map(
+    coAuthor =>
+      `-m "Co-authored-by: ${coAuthor} <${coAuthor.toLowerCase()}@users.noreply.github.com>"`
+  )
+  const gitCommand = `git commit -m "${message}" ${coAuthoringLines.join(
+    ' '
+  )} ${otherArgs.join(' ')}`
+  console.log(`\x1b[2m${gitCommand}\x1b[0m`)
+
+  try {
+    await asyncExec(gitCommand, { stdio: 'inherit' })
+  } catch (error) {
+    console.log(error.stdout)
+  }
+}
+
+;(async () => {
+  const commitInfo = await gatherInput()
+  try {
+    await writeCommit(commitInfo)
+  } catch (error) {
+    console.log(error.stdout)
+  }
+  process.exit
+})()
