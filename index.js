@@ -62,7 +62,7 @@ const writeCommit = async ({ message, coAuthors, otherArgs }) => {
   )} ${otherArgs.join(' ')}`
   console.log(`\x1b[2m${gitCommand}\x1b[0m`)
 
-  await asyncExec(gitCommand, { stdio: 'inherit' })
+  await asyncExec(gitCommand)
 }
 
 ;(async () => {
