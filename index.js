@@ -4,14 +4,14 @@ const prompts = require('prompts')
 const arg = require('arg')
 const { exec } = require('child_process')
 const { promisify } = require('util')
-const { os } = require('os')
+const os = require('os')
 const asyncExec = promisify(exec)
 
 const gatherInput = async () => {
   const args = arg(
     {
       // Types
-      '--co-authors': [String],
+      '--co-authors': String,
       '--message': String,
 
       // Aliases
@@ -25,18 +25,18 @@ const gatherInput = async () => {
   )
 
   return {
-    coAuthors:
-      args['--co-authors'] ||
-      (await prompts(
-        {
-          type: 'list',
-          name: 'coAuthors',
-          message: 'Co-Author GitHub Username(s):',
-          validate: coAuthors =>
-            coAuthors ? true : 'Please specify a co-author to continue.'
-        },
-        { onCancel: () => process.exit() }
-      )).coAuthors,
+    coAuthors: args['--co-authors']
+      ? args['--co-authors'].split(',').map(entry => entry.trim())
+      : (await prompts(
+          {
+            type: 'list',
+            name: 'coAuthors',
+            message: 'Co-Author GitHub Username(s):',
+            validate: coAuthors =>
+              coAuthors ? true : 'Please specify a co-author to continue.'
+          },
+          { onCancel: () => process.exit() }
+        )).coAuthors,
     message:
       args['--message'] ||
       (await prompts(
