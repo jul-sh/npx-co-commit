@@ -6,7 +6,7 @@ describe('co-commit', () => {
       .run('node index.js -m "test commit" -co "mariiapunda" --dry-run')
       .expect(({ stdout }) => {
         const expectedGitCommand =
-          'git commit -m "test commit" -m "Co-authored-by: mariiapunda <mariiapunda@users.noreply.github.com>" --dry-run'
+          'git commit -m "test commit\n\nCo-authored-by: mariiapunda <mariiapunda@users.noreply.github.com>" --dry-run'
 
         if (!stdout.includes(expectedGitCommand))
           return new Error('Does not output correct git command')
@@ -24,7 +24,7 @@ describe('co-commit', () => {
       .respond('another test commit\n')
       .expect(({ stdout }) => {
         const expectedGitCommand =
-          'git commit -m "another test commit" -m "Co-authored-by: mariiapunda <mariiapunda@users.noreply.github.com>" --dry-run'
+          'git commit -m "another test commit\n\nCo-authored-by: mariiapunda <mariiapunda@users.noreply.github.com>" --dry-run'
 
         if (!stdout.includes(expectedGitCommand))
           return new Error('Does not output correct git command')
@@ -40,7 +40,41 @@ describe('co-commit', () => {
       .respond('committing with sophie\n')
       .expect(({ stdout }) => {
         const expectedGitCommand =
-          'git commit -m "committing with sophie" -m "Co-authored-by: sophiebits <sophiebits@users.noreply.github.com>" --dry-run'
+          'git commit -m "committing with sophie\n\nCo-authored-by: sophiebits <sophiebits@users.noreply.github.com>" --dry-run'
+
+        if (!stdout.includes(expectedGitCommand))
+          return new Error('Does not output correct git command')
+      })
+      .code(0)
+      .end(done)
+  })
+
+  it('ouputs the correct git commit when commiting with multiple co-authors', done => {
+    nixt()
+      .run('node index.js --dry-run')
+      .on(/Co-Author GitHub/)
+      .respond('mariiapunda, tom-bonnike\n')
+      .on(/Commit Message:/)
+      .respond('test commit with multiple authors\n')
+      .expect(({ stdout }) => {
+        const expectedGitCommand =
+          'git commit -m "test commit with multiple authors\n\nCo-authored-by: mariiapunda <mariiapunda@users.noreply.github.com>\nCo-authored-by: tom-bonnike <tom-bonnike@users.noreply.github.com>"'
+
+        if (!stdout.includes(expectedGitCommand))
+          return new Error('Does not output correct git command')
+      })
+      .code(0)
+      .end(done)
+  })
+
+  it('ouputs the correct git commit for multiple co-authors based on flags', done => {
+    nixt()
+      .run(
+        'node index.js -m "test commit with multiple authors" -co "mariiapunda, tom-bonnike" --dry-run'
+      )
+      .expect(({ stdout }) => {
+        const expectedGitCommand =
+          'git commit -m "test commit with multiple authors\n\nCo-authored-by: mariiapunda <mariiapunda@users.noreply.github.com>\nCo-authored-by: tom-bonnike <tom-bonnike@users.noreply.github.com>"'
 
         if (!stdout.includes(expectedGitCommand))
           return new Error('Does not output correct git command')
