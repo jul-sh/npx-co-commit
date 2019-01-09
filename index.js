@@ -53,23 +53,24 @@ const gatherInput = async () => {
   }
 }
 
-const writeCommit = async ({ message, coAuthors, otherArgs }) => {
+const getGitCommand = ({ message, coAuthors, otherArgs }) => {
   const coAuthoringLines = coAuthors.map(
     coAuthor =>
       `Co-authored-by: ${coAuthor} <${coAuthor.toLowerCase()}@users.noreply.github.com>`
   )
   const coAuthoringMessage = os.EOL + os.EOL + coAuthoringLines.join(os.EOL)
-  const gitCommand = `git commit -m "${message +
-    coAuthoringMessage}" ${otherArgs.join(' ')}`
-  console.log(`\x1b[2m${gitCommand}\x1b[0m`)
 
-  await asyncExec(gitCommand)
+  return `git commit -m "${message + coAuthoringMessage}" ${otherArgs.join(
+    ' '
+  )}`
 }
 
 ;(async () => {
-  const commitInfo = await gatherInput()
+  const gitCommand = getGitCommand(await gatherInput())
+  console.log(`\x1b[2m${gitCommand}\x1b[0m`)
   try {
-    await writeCommit(commitInfo)
+    const output = await asyncExec(gitCommand)
+    console.log(output.stdout)
   } catch (error) {
     console.log(error.stdout)
   }
