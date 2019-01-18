@@ -2,7 +2,7 @@ const nixt = require('nixt')
 const os = require('os')
 
 describe('co-commit', () => {
-  it('ouputs the correct git commit based on flags', done => {
+  it('works using CLI arguments', done => {
     nixt()
       .run('node index.js -m "test commit" -co "mariiapunda" --dry-run')
       .expect(({ stdout }) => {
@@ -16,7 +16,7 @@ describe('co-commit', () => {
       .end(done)
   })
 
-  it('ouputs the correct git commit based on prompts', done => {
+  it('prompts for input if no arguments are provided', done => {
     nixt()
       .run('node index.js --dry-run')
       .on(/Co-Author GitHub/)
@@ -34,7 +34,7 @@ describe('co-commit', () => {
       .end(done)
   })
 
-  it('skips prompts when the correct arg is provided', done => {
+  it('skips relevant prompts if some data is provided as an argument', done => {
     nixt()
       .run('node index.js -co "sophiebits" --dry-run')
       .on(/Commit Message:/)
@@ -50,7 +50,7 @@ describe('co-commit', () => {
       .end(done)
   })
 
-  it('ouputs the correct git commit when commiting with multiple co-authors', done => {
+  it('supports comma-separated co-authors provided via the prompt', done => {
     nixt()
       .run('node index.js --dry-run')
       .on(/Co-Author GitHub/)
@@ -70,7 +70,7 @@ describe('co-commit', () => {
       .end(done)
   })
 
-  it('ouputs the correct git commit for multiple co-authors based on flags', done => {
+  it('supports comma-separated co-authors provided as an argument', done => {
     nixt()
       .run(
         'node index.js -m "test commit with multiple authors" -co "mariiapunda, tom-bonnike" --dry-run'
