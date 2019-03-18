@@ -2,10 +2,8 @@
 
 const prompts = require('prompts')
 const arg = require('arg')
-const { exec } = require('child_process')
-const { promisify } = require('util')
+const { execSync } = require('child_process')
 const os = require('os')
-const asyncExec = promisify(exec)
 
 const gatherInput = async () => {
   const args = arg(
@@ -69,10 +67,9 @@ const getGitCommand = ({ message, coAuthors, otherArgs }) => {
   const gitCommand = getGitCommand(await gatherInput())
   console.log(`\x1b[2m${gitCommand}\x1b[0m`)
   try {
-    const output = await asyncExec(gitCommand)
-    console.log(output.stdout)
+    execSync(gitCommand, { stdio: 'inherit' })
   } catch (error) {
-    console.log(error.stdout)
+    // discard node error; git will print an error message.
   }
-  process.exit
+  process.exit()
 })()
