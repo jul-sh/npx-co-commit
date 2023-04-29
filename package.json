@@ -46,7 +46,7 @@
     "prompts": "^1.1.1"
   },
   "devDependencies": {
-    "mocha": "^5.2.0",
+    "mocha": "^10.2.0",
     "nixt": "^0.5.1"
   }
 }
